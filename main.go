@@ -3,15 +3,14 @@ package main
 import (
 	"log"
 
-	"derekgarnett.com/aoc/2025/password"
+	"derekgarnett.com/aoc/2025/invalidIds"
 )
 
 func init() {
 }
 
 func main() {
-	useAlternateMethod := true
-	pass := password.GetPassword(useAlternateMethod)
+	total := invalidIds.GetInvalidIdTotal(true)
 
-	log.Println("The password is: ", pass)
+	log.Println(total)
 }
