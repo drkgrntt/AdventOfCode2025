@@ -2,6 +2,7 @@ package password
 
 import (
 	"log"
+	"math"
 	"os"
 	"strconv"
 	"strings"
@@ -33,10 +34,41 @@ func getInput() []string {
 }
 
 var currentPosition = 50
+var useAlternateMethod = false
 
-func handleInput(input string, useAlternateMethod bool) {
-	dir := 0
-	qty := 0
+func move(dir int, qty int) {
+	if useAlternateMethod {
+		password += int(math.Floor(float64(qty) / 100))
+	}
+
+	initialPosition := currentPosition
+	movement := (qty % 100) * dir
+	currentPosition += movement
+
+	if currentPosition < 0 {
+		currentPosition += 100
+		// If we started at 0, we've already counted that
+		if useAlternateMethod && initialPosition != 0 {
+			password += 1
+		}
+	} else if currentPosition > 99 {
+		currentPosition -= 100
+		if useAlternateMethod {
+			password += 1
+		}
+	} else if currentPosition == 0 {
+		if useAlternateMethod {
+			password += 1
+		}
+	}
+
+	// If we're using the alternate method, this already happened
+	if !useAlternateMethod && currentPosition == 0 {
+		password += 1
+	}
+}
+
+func parseInput(input string) (dir int, qty int) {
 	var err error
 
 	if strings.Contains(input, "R") {
@@ -53,27 +85,15 @@ func handleInput(input string, useAlternateMethod bool) {
 		log.Fatal(err)
 	}
 
-	for i := 0; i < qty; i++ {
-		currentPosition += (1 * dir)
-		if currentPosition == 100 {
-			currentPosition = 0
-		}
-		if currentPosition == -1 {
-			currentPosition = 99
-		}
-		if currentPosition == 0 && useAlternateMethod {
-			password += 1
-		}
-	}
-
-	if currentPosition == 0 && !useAlternateMethod {
-		password += 1
-	}
+	return
 }
 
-func GetPassword(useAlternateMethod bool) int {
+func GetPassword(useAltMethod bool) int {
+	useAlternateMethod = useAltMethod
+
 	for _, input := range getInput() {
-		handleInput(input, useAlternateMethod)
+		dir, qty := parseInput(input)
+		move(dir, qty)
 	}
 
 	return password
