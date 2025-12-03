@@ -3,14 +3,14 @@ package main
 import (
 	"log"
 
-	"derekgarnett.com/aoc/2025/invalidIds"
+	"derekgarnett.com/aoc/2025/batteries"
 )
 
 func init() {
 }
 
 func main() {
-	total := invalidIds.GetInvalidIdTotal(true)
+	total := batteries.GetJoltage()
 
 	log.Println(total)
 }
