@@ -10,7 +10,7 @@ func init() {
 }
 
 func main() {
-	total := batteries.GetJoltage()
+	total := batteries.GetJoltage(12)
 
 	log.Println(total)
 }

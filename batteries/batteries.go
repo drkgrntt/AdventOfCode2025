@@ -10,6 +10,7 @@ import (
 
 var batteryFile = "batteries/joltage.txt"
 var batteryBanks = []string{
+	// // answer is 357
 	// "987654321111111",
 	// "811111111111119",
 	// "234234234234278",
@@ -37,34 +38,57 @@ func getBatteries() []string {
 	return batteryBanks
 }
 
-func handleBank(bank string) {
-	firstPosition := -1
-	var firstDigit, secondDigit string
+func handleBank(bank string, numDigits int) {
+	positions := []int{}
+	digits := []string{}
 
-digits:
-	for x := 0; x < 2; x++ {
-	gtl:
+	// We're running the process to find the digit once per number of digits
+	// Starting at the end so we know how far from the end of the string we need to stop
+digitsLoop:
+	for x := numDigits; x > 0; x-- {
+		var position int
+		if len(positions) == 0 {
+			position = -1
+		} else {
+			position = positions[len(positions)-1]
+		}
+
+		// Loop backwards from 9-1 to prioritize the largest value
+	optionsLoop:
 		for i := 9; i > 0; i-- {
-			for j := firstPosition + 1; j < len(bank); j++ {
-				if firstPosition == -1 && j == len(bank)-1 {
-					continue gtl
+
+			// Go through each batter in the battery bank
+			for j := position + 1; j < len(bank); j++ {
+
+				// If we've reached the end of the battery bank while leaving the correct number of digits available,
+				// then this value was not available for this digit
+				if j == len(bank)-x+1 {
+					continue optionsLoop
 				}
+
+				// If we've found the digit that matches, add it to the list
 				if string(bank[j]) == fmt.Sprint(i) {
-					if firstPosition == -1 {
-						firstPosition = j
-						firstDigit = string(bank[j])
-					} else {
-						secondDigit = string(bank[j])
-					}
-					continue digits
+					positions = append(positions, j)
+					digits = append(digits, string(bank[j]))
+
+					// Move on to the next digit
+					continue digitsLoop
 				}
 			}
 		}
 	}
 
-	joltage, err := strconv.Atoi(firstDigit + secondDigit)
+	var joltageString string
+	for _, digit := range digits {
+		joltageString += digit
+	}
 
-	// log.Println(joltage)
+	joltage, err := strconv.Atoi(joltageString)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	log.Println(joltage)
 
 	if err != nil {
 		log.Fatal(err)
@@ -73,9 +97,9 @@ digits:
 	total += joltage
 }
 
-func GetJoltage() int {
+func GetJoltage(numDigits int) int {
 	for _, bank := range getBatteries() {
-		handleBank(bank)
+		handleBank(bank, numDigits)
 	}
 	return total
 }
