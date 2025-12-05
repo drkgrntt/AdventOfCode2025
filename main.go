@@ -3,14 +3,14 @@ package main
 import (
 	"log"
 
-	"derekgarnett.com/aoc/2025/batteries"
+	"derekgarnett.com/aoc/2025/paperRolls"
 )
 
 func init() {
 }
 
 func main() {
-	total := batteries.GetJoltage(12)
+	total := paperRolls.GetPaperRolls()
 
 	log.Println(total)
 }
