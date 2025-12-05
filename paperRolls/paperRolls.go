@@ -48,6 +48,8 @@ func getGrid() [][]string {
 	return grid
 }
 
+var nextGrid = [][]string{}
+
 func checkRoll(row int, col int) {
 	adjacentRolls := 0
 	grid := getGrid()
@@ -122,17 +124,38 @@ func checkRoll(row int, col int) {
 	}
 
 	log.Println(row, col)
+	nextGrid[row][col] = "."
 	total++
 }
 
-func GetPaperRolls() int {
+func GetPaperRolls(untilExhausted bool) int {
 	// log.Println(getGrid())
-	for rowI, row := range getGrid() {
-		for colI, col := range row {
-			if col == "@" {
-				checkRoll(rowI, colI)
+	prevTotal := total
+
+	for {
+		nextGrid = [][]string{}
+		for i, row := range getGrid() {
+			nextGrid = append(nextGrid, []string{})
+			for _, col := range row {
+				nextGrid[i] = append(nextGrid[i], col)
 			}
 		}
+
+		for rowI, row := range getGrid() {
+			for colI, col := range row {
+				if col == "@" {
+					checkRoll(rowI, colI)
+				}
+			}
+		}
+
+		if !untilExhausted || (prevTotal == total) {
+			break
+		}
+
+		prevTotal = total
+		grid = nextGrid
 	}
+
 	return total
 }

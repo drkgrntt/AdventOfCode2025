@@ -10,7 +10,7 @@ func init() {
 }
 
 func main() {
-	total := paperRolls.GetPaperRolls()
+	total := paperRolls.GetPaperRolls(true)
 
 	log.Println(total)
 }
